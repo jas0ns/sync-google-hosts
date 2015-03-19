@@ -11,19 +11,46 @@ package main
 
 import (
 	"bytes"
+	"github.com/Unknwon/goconfig"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
 const (
-	resAddr   = "http://www.360kb.com/kb/2_122.html"
-	startStr  = "#google hosts 2015 by 360kb.com"
-	endStr    = "#google hosts 2015 end"
 	hostsPath = "C:/Windows/System32/drivers/etc/hosts"
+	config    = "config.ini"
 )
 
+var resAddr string
+var startStr string
+var endStr string
+
+func GetConfig() {
+	c, err := goconfig.LoadConfigFile(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resAddr, err = c.GetValue("hosts", "url")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	startStr, err = c.GetValue("hosts", "start")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	endStr, err = c.GetValue("hosts", "end")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
+	GetConfig()
+
 	res, err := http.Get(resAddr)
 	if err != nil {
 		log.Fatal(err)
